@@ -3,7 +3,7 @@
 int main(int argc , char **argv)
 {
      int input, output, size, i, j = 0, pos = 0 ;
-     char tmp[10240];
+     char tmp[10240], buf[20];
      struct header *h = NULL;
 
      if(argc != 3)
@@ -22,13 +22,51 @@ int main(int argc , char **argv)
      
      if(!size)
 	  return 84 ;
+     /* Recupération de l'entete */
      
      h = parseheaders(tmp, size, &pos) ;
 
-     for(i = 0 ; h[i].name != NULL ; i++)
-	  printf("\n%d- %s : %s->%s(%d) , ",++j, h[i].name, h[i].unity, h[i].processing, h[i].type) ;
+     /* Ecrire l'entete dans le output */
 
-     parsevalues(h, tmp, size, input, output);
+     for(i = 0; h[i].name != NULL; i++)
+     {
+	  strcpy(buf, h[i].name);
+	  strcat(buf, "\t\0");
+	  if(write(output, buf, strlen(buf)) != strlen(buf))
+	       printf("\n Erreur d'écriture des noms des colones");
+     }
+
+     write(output, "\n", 1);
+
+     for(i = 0; h[i].name != NULL; i++)
+     {
+	  if(h[i].unity)
+	  { 
+	       strcpy(buf, h[i].unity);
+	       strcat(buf, "\t\0");
+	       if(write(output, buf, strlen(buf)) != strlen(buf))
+		    printf("\n Erreur d'écriture des unités des colones");
+	  }
+     }
+
+     write(output, "\n", 1);
+
+     for(i = 0; h[i].name != NULL; i++)
+     {
+	  if(h[i].processing)
+	  {
+	       strcpy(buf, h[i].processing);
+	       strcat(buf, "\t\0");
+	       if(write(output, buf, strlen(buf)) != strlen(buf))
+		    printf("\n Erreur d'écriture des traitement effectué sur chaque colones");
+	  }
+     }
+     
+     write(output, "\n", 1);
+
+
+     parsevalues(h, tmp, &pos, size, input, output);
+     
      
      free(h) ;
      close(input) ;

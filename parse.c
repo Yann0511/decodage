@@ -147,45 +147,21 @@ struct header *parseheaders(char *buf, int nbuf, int *pos)
      }
 }
 
-void parsevalues(struct header *h, char *tmp, int size, int in, int out)
+void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int output)
 {
      int i;
-     char buf[20];
-     /* Ecire l'entete dans le out */
-
-     for(i = 0; h[i].name != NULL; i++)
+     /* Parcours du fichier jusqu'a trouvé l'id de la station */
+     for(i = *pos; i <= size; i++)
      {
-	  strcpy(buf, h[i].name);
-	  strcat(buf, "\t\0");
-	  if(write(out, buf, strlen(buf)) != strlen(buf))
-	       printf("\n Erreur d'écriture des noms des colones");
-     }
-
-     write(out, "\n", 1);
-
-     for(i = 0; h[i].name != NULL; i++)
-     {
-	  if(h[i].unity)
-	  { 
-	       strcpy(buf, h[i].unity);
-	       strcat(buf, "\t\0");
-	       if(write(out, buf, strlen(buf)) != strlen(buf))
-		    printf("\n Erreur d'écriture des unités des colones");
-	  }
-     }
-
-     write(out, "\n", 1);
-
-     for(i = 0; h[i].name != NULL; i++)
-     {
-	  if(h[i].processing)
+	  if(i == size)
 	  {
-	       strcpy(buf, h[i].processing);
-	       strcat(buf, "\t\0");
-	       if(write(out, buf, strlen(buf)) != strlen(buf))
-		    printf("\n Erreur d'écriture des traitement effectué sur chaque colones");
+	       size = read(input , tmp , 10240) ;
+	       i = 0;
 	  }
+
+	  if(tmp[i] >= 'A' && tmp[i] <= 'Z')
+	       break;
      }
 
-     write(out, "\n", 1);
+     printf("\n %c", tmp[i]);
 }
