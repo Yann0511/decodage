@@ -138,7 +138,7 @@ struct header *parseheaders(char *buf, int nbuf, int *pos)
 void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int output)
 {
      int i, c = 0, nc = 0, type_size, ligne_size = 0, ligne_parcourue = 0;
-     char seq[25], buf[25];
+     char seq[25], buf[25], seq_id_station[25];
      infd seq_decode;
      int p = 0, datapos = 0;
 
@@ -155,6 +155,10 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 	  if(tmp[i] >= 'A' && tmp[i] <= 'Z')
 	       break;
      }
+     
+     /* J'enregistre la sequence correspondant à l'id de la station */
+     memcpy(seq_id_station, tmp+i, 24);
+     seq_id_station[24] = '\0';
 
      datapos = i;
 
@@ -257,11 +261,11 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 
 	  if(type_size > size-1-i)
 	  {
-	       /* lseek(input, -(size-i), 1); */
-	       /* size = read(input, tmp, SIZE); */
-	       /* i = 0; */
-	       printf("dfdff");
-	       return ;
+	       lseek(input, -(size-i), 1);
+	       size = read(input, tmp, SIZE);
+	       i = 0;
+	       /* printf("dfdff"); */
+	       /* return ; */
 
 	  }
 	  
@@ -344,31 +348,65 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 	  /* } */
 	  /* fin test */
 
+	  i = i + type_size;
+
+          /* Quand on atteint la fin du tableau */
+	  if(i == size)
+	  {
+	       size = read(input , tmp , SIZE) ;
+	       i = 0;
+	  }
+
+	  
 	  if(h[c+1].name == 0)
 	  {
 	       write(output, "\n", 1);
+
 	       /* infd test = decode(tmp+i, INT4); */
 	       /* printf("buf = %s , decode = %d\n",buf, test.in); */
 
-	       ligne_parcourue++;
+	       
+	       /* Se placé sur l'id de la station avant de recommencé le décodage 
+		  pour une nouvelle ligne */
+	       /* On vérifie d'abord qu'on peut bien copié 24 octet à parti de la 
+		  position actuelle sinon on recharche le tableau */
+	       if(24 > size-1-i)
+	       {
+		    lseek(input, -(size-i), 1);
+		    size = read(input, tmp, SIZE);
+		    i = 0;
+		    /* printf("dfdff"); */
+		    /* return ; */
+	       }
+
+	       memcpy(seq, tmp+i, 24);
+	       while(strncmp(seq, seq_id_station, 24))
+	       {
+		    i++;
+		    
+		    /* On vérifie d'abord qu'on peut bien copié 24 octet à parti de la 
+		       position actuelle sinon on recharche le tableau */
+		    if(24 > size-1-i)
+		    {
+			 lseek(input, -(size-i), 1);
+			 size = read(input, tmp, SIZE);
+			 i = 0;
+			 /* printf("dfdff"); */
+			 /* return ; */
+		    }
+		    
+		    /* On vérifie si on est à la fin du fichier */
+		    if(size == 0)
+			 return;
+		    
+		    memcpy(seq, tmp+i, 24);
+	       }
+	       
 	       c = 0;
 	  }
 
 	  else
 	       c++;
-
-	  /* Pour le decalage de 16 apres chaque 4 ligne */
-	  if(ligne_parcourue == 4)
-	  {
-	       i = i + type_size + 16;
-	       ligne_parcourue = 0;
-	  }
-
-	  else
-	       i = i + type_size;
-	  
-	  
      }
      
 }
-
