@@ -137,7 +137,7 @@ struct header *parseheaders(char *buf, int nbuf, int *pos)
 
 void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int output)
 {
-     int i, c = 0, nc = 0, type_size, ligne_size = 0, ligne_parcourue = 0;
+     int i, c = 0, nc = 0, type_size, ligne_size = 0;
      char seq[25], buf[25], seq_id_station[25];
      infd seq_decode;
      int p = 0, datapos = 0;
@@ -258,15 +258,12 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 	       //default :
 	  }
 
-
-	  if(type_size > size-1-i)
+	  /* Si ce qui reste dans tmp n'a pas la meme taille que la colonne actuelle */
+	  if(type_size > size-i)
 	  {
-	       lseek(input, -(size-i), 1);
-	       size = read(input, tmp, SIZE);
+	       memcpy(tmp, tmp+i, size-i);
+	       size = read(input, tmp+size-i+1, i) + size-i;
 	       i = 0;
-	       /* printf("dfdff"); */
-	       /* return ; */
-
 	  }
 	  
 	  memcpy(seq, tmp+i, type_size);
@@ -372,11 +369,9 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 		  position actuelle sinon on recharche le tableau */
 	       if(24 > size-1-i)
 	       {
-		    lseek(input, -(size-i), 1);
-		    size = read(input, tmp, SIZE);
+		    memcpy(tmp, tmp+i, size-i);
+		    size = read(input, tmp+size-i+1, i) + size-i;
 		    i = 0;
-		    /* printf("dfdff"); */
-		    /* return ; */
 	       }
 
 	       memcpy(seq, tmp+i, 24);
@@ -388,11 +383,9 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 		       position actuelle sinon on recharche le tableau */
 		    if(24 > size-1-i)
 		    {
-			 lseek(input, -(size-i), 1);
-			 size = read(input, tmp, SIZE);
+			 memcpy(tmp, tmp+i, size-i);
+			 size = read(input, tmp+size-i+1, i) + size-i;
 			 i = 0;
-			 /* printf("dfdff"); */
-			 /* return ; */
 		    }
 		    
 		    /* On vérifie si on est à la fin du fichier */

@@ -3,7 +3,7 @@
 int main(int argc , char **argv)
 {
      int input, output, size, i, j = 0, pos = 0 ;
-     char tmp[10240], buf[20];
+     char tmp[SIZE], buf[20];
      struct header *h = NULL;
 
      if(argc != 3)
@@ -18,10 +18,11 @@ int main(int argc , char **argv)
      if(input == -1 || output == -1)
 	  return 84 ;
 
-     size = read(input , tmp , 10240) ;
+     size = read(input , tmp , SIZE) ;
      
      if(!size)
 	  return 84 ;
+
      /* Recupération de l'entete */
      
      h = parseheaders(tmp, size, &pos) ;
@@ -64,9 +65,7 @@ int main(int argc , char **argv)
      
      write(output, "\n", 1);
 
-
      parsevalues(h, tmp, &pos, size, input, output);
-     
      
      free(h) ;
      close(input) ;
@@ -74,6 +73,3 @@ int main(int argc , char **argv)
     
      return 0 ;
 }
-
-	
-    
