@@ -1,6 +1,6 @@
 #ifndef DECODE
 #define DECODE
-
+#define SIZE 4098
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -9,6 +9,7 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include <endian.h>
+#include <stdbool.h>
 
 struct header
 {
@@ -20,16 +21,14 @@ struct header
 
 enum
 {
-     INT4 = sizeof(int),
-     IEEE4 = sizeof(float),
-     IEEE8 = sizeof(double),
-     INT2 = sizeof(short),
-     UINT2 = sizeof(short),
-     UINT4 = sizeof(int),
-     FP2 = 2,
-     ASCII24 = 24,
-     Boolean = 1,
-     BOOL8 = 8
+     INT4,
+     IEEE4,
+     IEEE8,
+     INT2,
+     UINT2,
+     UINT4,
+     FP2,
+     ASCII24,
 };
 
 typedef union 
@@ -46,6 +45,6 @@ infd decode(char *seq, int type);
 
 struct header *parseheaders(char *buf, int nbuf, int*);
 
-void parsevalues(struct header*, char *tmp, int size, int in, int out);
+void parsevalues(struct header*, char *tmp, int *pos, int size, int input, int output);
 
 #endif
