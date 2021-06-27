@@ -358,7 +358,6 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
 	  size = read(input , tmp , SIZE) ;
 	  i = 0;
 	}
-
 	  
       if(h[c+1].name == 0)
 	{

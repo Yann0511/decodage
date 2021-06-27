@@ -14,32 +14,32 @@
 
 struct header
 {
-     char *name;
-     char *unity;
-     char *processing;
-     int type;
+  char *name;
+  char *unity;
+  char *processing;
+  int type;
 };
 
 enum
-{
-     INT4,
-     IEEE4,
-     IEEE8,
-     INT2,
-     UINT2,
-     UINT4,
-     FP2,
-     ASCII24,
-};
+  {
+   INT4,
+   IEEE4,
+   IEEE8,
+   INT2,
+   UINT2,
+   UINT4,
+   FP2,
+   ASCII24,
+  };
 
 typedef union 
 {
-     int in;
-     float f;
-     double d;
-     char id[24];
-     short sin;
-     long long int lin;
+  int in;
+  float f;
+  double d;
+  char id[24];
+  short sin;
+  long long int lin;
 }infd;
 
 infd decode(char *seq, int type);
