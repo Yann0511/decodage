@@ -1,6 +1,7 @@
 #ifndef DECODE
 #define DECODE
 #define SIZE 4098
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -8,8 +9,8 @@
 #include<sys/stat.h>
 #include<fcntl.h>
 #include<unistd.h>
-#include <endian.h>
-#include <stdbool.h>
+#include<endian.h>
+#include<stdbool.h>
 
 struct header
 {
