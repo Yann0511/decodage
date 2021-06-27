@@ -412,5 +412,4 @@ void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int
       else
 	c++;
     }
-     
 }
