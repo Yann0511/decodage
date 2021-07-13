@@ -64,6 +64,7 @@ int main(int argc , char **argv)
     }
      
   write(output, "\n", 1);
+  
   sprintf(date, "%d-%d-%d %d:%d:%d, ", time->annee, time->mois, time->jour, time->heure, time->minute, time->seconde);
   write(output, date, strlen(date));
   

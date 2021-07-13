@@ -8,7 +8,6 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
      
   for(i = *pos; i < nbuf; i++)
     {
-      /* Recherche la ligne contenenant le nom de la table, la date et la fréquence d'en registrement. */
       /* Recupereration de la date */
       while(strncmp(buf+i, "\"Table\"", 5))
 	i++;
@@ -17,6 +16,7 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
 	i--;
       
       i++;
+      
       if(buf[i] == '\"')
 	{
 	  j = 0;
@@ -39,61 +39,72 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
 
 	  k++;
 	  j = 0;
+
 	  while(date[k] != '-')
 	    {
 	      m_date[j] = date[k];
 	      j++;
 	      k++;
 	    }
+	  
 	  m_date[j] = '\0';
 	  time->mois = atoi(m_date);
 	  
 	  k++;
 	  j = 0;
+
 	  while(date[k] != ' ')
 	    {
 	      m_date[j] = date[k];
 	      j++;
 	      k++;
 	    }
+
 	  m_date[j] = '\0';
 	  time->jour = atoi(m_date);
 
 	   k++;
 	  j = 0;
+
 	  while(date[k] != ':')
 	    {
 	      m_date[j] = date[k];
 	      j++;
 	      k++;
 	    }
+
 	  m_date[j] = '\0';
 	  time->heure = atoi(m_date);
 
 	   k++;
 	  j = 0;
+
 	  while(date[k] != ':')
 	    {
 	      m_date[j] = date[k];
 	      j++;
 	      k++;
 	    }
+
 	  m_date[j] = '\0';
 	  time->minute = atoi(m_date);
 
 	   k++;
 	  j = 0;
+
 	  while(date[k] != '\0')
 	    {
 	      m_date[j] = date[k];
 	      j++;
 	      k++;
 	    }
+
 	  m_date[j] = '\0';
 	  time->seconde = atoi(m_date);
 
 	  time->tiece = 0;
 	}
+
       /* else */
       /* 	printf("\n1Je suis perdu"); */
 
@@ -105,16 +116,18 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
 	i++;
       
       i++;
+
       if(buf[i] == '\"')
 	{
 	  j = 0;
 	  k = 0;
+
 	  while(buf[++i] != ' ')
 	    k++;
 	  
 	  while(buf[++i] != '\"')
 	    j++;
-	  printf("\nk = %d, j = %d", k, j);
+
 	  freq = malloc(sizeof(char)*k);
 	  strncpy(freq, buf+i-k-j-1, k);
 	  time->units = malloc(sizeof(char)*j);
@@ -122,6 +135,7 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
 
 	  time->freq = atoi(freq);
 	}
+
       /* else */
       /* 	printf("\n2Je suis perdu"); */
 
@@ -133,7 +147,6 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
       while(strncmp(buf+i, "\"StationID\"", 11))
 	i++;
        
-
       /*compter le nombre de colonne*/
       j = i;
       for(nc = 0; buf[i] != '\n'; i++)
@@ -257,6 +270,7 @@ struct header *parseheaders(char *buf, int nbuf, int *pos, struct Time_Step_ *ti
   return 0;
 }
 
+
 char *increment_date(struct Time_Step_ *time)
 {
 
@@ -320,9 +334,11 @@ char *increment_date(struct Time_Step_ *time)
 	    }
 	}
     }
+
   sprintf(date, "%d-%d-%d %d:%d:%d, ", time->annee, time->mois, time->jour, time->heure, time->minute, time->seconde);
   return date;
 }
+
 
 void parsevalues(struct header *h, char *tmp, int *pos, int size, int input, int output, struct Time_Step_ *time)
 {

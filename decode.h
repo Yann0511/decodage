@@ -12,7 +12,8 @@
 #include<endian.h>
 #include<stdbool.h>
 
-struct Time_Step_{
+struct Time_Step_
+{
   int jour;
   int mois;
   int annee;
