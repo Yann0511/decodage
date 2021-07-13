@@ -12,6 +12,18 @@
 #include<endian.h>
 #include<stdbool.h>
 
+struct Time_Step_{
+  int jour;
+  int mois;
+  int annee;
+  int heure;
+  int minute;
+  int seconde;
+  int tiece;
+  int freq;
+  char *units;
+};
+
 struct header
 {
   char *name;
@@ -44,8 +56,8 @@ typedef union
 
 infd decode(char *seq, int type);
 
-struct header *parseheaders(char *buf, int nbuf, int*);
+struct header *parseheaders(char *buf, int nbuf, int*, struct Time_Step_*);
 
-void parsevalues(struct header*, char *tmp, int *pos, int size, int input, int output);
+void parsevalues(struct header*, char *tmp, int *pos, int size, int input, int output, struct Time_Step_*);
 
 #endif

@@ -3,9 +3,9 @@
 int main(int argc , char **argv)
 {
   int input, output, size, i, j = 0, pos = 0 ;
-  char tmp[SIZE], buf[20];
+  char tmp[SIZE], buf[20], date[40];
   struct header *h = NULL;
-
+  struct Time_Step_ *time = calloc(1, sizeof(struct Time_Step_));
   if(argc != 3)
     {
       printf(" \n Usage : decode < nom du fichier> <nom du fichier de sorti> < station>\n") ;
@@ -25,7 +25,7 @@ int main(int argc , char **argv)
 
   /* Recupération de l'entete */
      
-  h = parseheaders(tmp, size, &pos) ;
+  h = parseheaders(tmp, size, &pos, time) ;
 
   /* Ecrire l'entete dans le output */
 
@@ -64,8 +64,10 @@ int main(int argc , char **argv)
     }
      
   write(output, "\n", 1);
-
-  parsevalues(h, tmp, &pos, size, input, output);
+  sprintf(date, "%d-%d-%d %d:%d:%d, ", time->annee, time->mois, time->jour, time->heure, time->minute, time->seconde);
+  write(output, date, strlen(date));
+  
+  parsevalues(h, tmp, &pos, size, input, output, time);
      
   free(h) ;
   close(input) ;
