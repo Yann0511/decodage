@@ -2,8 +2,8 @@
 
 int main(int argc , char **argv)
 {
-  int input, output, size, i, j = 0, pos = 0 ;
-  char tmp[SIZE], buf[20], date[40];
+  int input, output, size, i, j = 0, pos = 0, *type = calloc(1, sizeof(int)) ;
+  char tmp[SIZE], buf[20], *date = calloc(40, sizeof(char));;
   struct header *h = NULL;
   struct Time_Step_ *time = calloc(1, sizeof(struct Time_Step_));
   if(argc != 3)
@@ -13,9 +13,8 @@ int main(int argc , char **argv)
     }
 
   input  = open(argv[1] , O_RDONLY) ;
-  output = open(argv[2] , O_CREAT | O_WRONLY , 0644 ) ;
 		  
-  if(input == -1 || output == -1)
+  if(input == -1)
     return 84 ;
 
   size = read(input , tmp , SIZE) ;
@@ -25,54 +24,33 @@ int main(int argc , char **argv)
 
   /* Recupération de l'entete */
      
-  h = parseheaders(tmp, size, &pos, time) ;
+  h = parseheaders(tmp, size, &pos, time, type, argv) ;
 
-  /* Ecrire l'entete dans le output */
-
-  for(i = 0; h[i].name != NULL; i++)
-    {
-      strcpy(buf, h[i].name);
-      strcat(buf, "\t\0");
-      if(write(output, buf, strlen(buf)) != strlen(buf))
-	printf("\n Erreur d'écriture des noms des colones");
-    }
-
-  write(output, "\n", 1);
+  /* Création des fichiers */
 
   for(i = 0; h[i].name != NULL; i++)
     {
-      if(h[i].unity)
-	{ 
-	  strcpy(buf, h[i].unity);
-	  strcat(buf, "\t\0");
-	  if(write(output, buf, strlen(buf)) != strlen(buf))
-	    printf("\n Erreur d'écriture des unités des colones");
-	}
-    }
-
-  write(output, "\n", 1);
-
-  for(i = 0; h[i].name != NULL; i++)
-    {
-      if(h[i].processing)
+      if(!strncmp(h[i].file, "StationID", 9))
+	continue;
+      else
 	{
-	  strcpy(buf, h[i].processing);
-	  strcat(buf, "\t\0");
-	  if(write(output, buf, strlen(buf)) != strlen(buf))
-	    printf("\n Erreur d'écriture des traitement effectué sur chaque colones");
+	  output = open(h[i].file , O_CREAT | O_WRONLY , 0644 );
+	  close(output) ;
 	}
     }
-     
-  write(output, "\n", 1);
+
+  arrondi_date_(time);
+  sprintf(date, "%d-%d-%d %2d:%2d:%2d.%2d ", time->annee, time->mois, time->jour, time->heure, time->minute, time->seconde, time->tiece);
+
+  if(*type == 1)
+    parsevalues(h, tmp, &pos, size, input, output, time, date);
+  else
+    parsevalues_type_0(h, tmp, &pos, size, input, output, time, date);
   
-  sprintf(date, "%d-%d-%d %d:%d:%d, ", time->annee, time->mois, time->jour, time->heure, time->minute, time->seconde);
-  write(output, date, strlen(date));
-  
-  parsevalues(h, tmp, &pos, size, input, output, time);
-     
   free(h) ;
+  free(time);
+  free(date);
   close(input) ;
-  close(output) ;
     
   return 0 ;
 }

@@ -12,8 +12,7 @@
 #include<endian.h>
 #include<stdbool.h>
 
-struct Time_Step_
-{
+struct Time_Step_{
   int jour;
   int mois;
   int annee;
@@ -30,6 +29,7 @@ struct header
   char *name;
   char *unity;
   char *processing;
+  char *file;
   int type;
 };
 
@@ -57,8 +57,13 @@ typedef union
 
 infd decode(char *seq, int type);
 
-struct header *parseheaders(char *buf, int nbuf, int*, struct Time_Step_*);
+void arrondi_date_(struct Time_Step_ *);
 
-void parsevalues(struct header*, char *tmp, int *pos, int size, int input, int output, struct Time_Step_*);
+void increment_date(struct Time_Step_ *time, int freq, char *date);
 
+struct header *parseheaders(char *buf, int nbuf, int*, struct Time_Step_*, int *type, char **argv);
+
+void parsevalues(struct header*, char *tmp, int *pos, int size, int input, int output, struct Time_Step_*, char *date);
+
+void parsevalues_type_0(struct header *h, char *tmp, int *pos, int size, int input, int output, struct Time_Step_ *time, char *date);
 #endif
